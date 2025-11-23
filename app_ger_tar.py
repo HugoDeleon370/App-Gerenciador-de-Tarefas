@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from tkinter import ttk
-from pymongo import mongo_client
+from pymongo import MongoClient
 from bson.objectid import ObjectId
 
 class ger_tar_app():
@@ -11,11 +11,17 @@ class ger_tar_app():
         self.root.title("App")
         self.root.geometry("800x580")
         self.root.resizable(False, False) 
-        self.cliente = mongo_client("mongodb+srv://user_hd:tgYkDOOvW0WGdZaS@cluster0.yd1ejkl.mongodb.net/") 
-        self.bd = self.cliente["ger_tar_db"]
-        self.colecao = self.db["tarefas"]
-
         ctk.set_appearance_mode("light")
+
+        # Conexão com o banco de dados
+        try:
+            cliente = MongoClient("mongodb+srv://user_hd:tgYkDOOvW0WGdZaS@cluster0.yd1ejkl.mongodb.net/?appName=Cluster0") 
+            bd = cliente["tarefas"]
+            colecao = bd["ger_tar_bd"]
+            print(f"Conexão realizada com sucesso!")
+        except Exception as excecao:
+            print(f"Não conectado ao Banco de dados!", excecao)
+        
 
         # -------------------------------------------------------------
         # TÍTULO DA TAREFA
