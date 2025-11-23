@@ -82,9 +82,9 @@ class ger_tar_app():
         ctk.CTkLabel(root, text="Status: ", font=("Arial bold", 15)).grid(row=3, column=0, pady=15, sticky="e",padx=20)
 
 
-        status_var = ctk.StringVar(value="")
+        status_var = ctk.StringVar(value="Todos")
 
-        status_var = ctk.CTkOptionMenu(root, values=["Pendente", "Concluída"], width=150, text_color="#000000", dropdown_hover_color="#0870b1").grid(row=3, column=1, sticky="w")
+        status_var = ctk.CTkOptionMenu(root, values=["Pendente", "Concluída"], variable=status_var, width=150, text_color="#000000", dropdown_hover_color="#0870b1").grid(row=3, column=1, sticky="w")
 
         btn_flt = ctk.CTkButton(root, text="Aplicar Filtro", text_color="#000000", width=230)
         btn_flt.grid(row=3, column=1, padx=30, sticky="e")
