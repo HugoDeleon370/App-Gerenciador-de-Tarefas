@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from tkinter import ttk
-
+from pymongo import mongo_client
+from bson.objectid import ObjectId
 
 class ger_tar_app():
 
@@ -9,7 +10,10 @@ class ger_tar_app():
         self.root = root
         self.root.title("App")
         self.root.geometry("800x580")
-        self.root.resizable(False, False)  
+        self.root.resizable(False, False) 
+        self.cliente = mongo_client("mongodb+srv://user_hd:tgYkDOOvW0WGdZaS@cluster0.yd1ejkl.mongodb.net/") 
+        self.bd = self.cliente["ger_tar_db"]
+        self.colecao = self.db["tarefas"]
 
         ctk.set_appearance_mode("light")
 
