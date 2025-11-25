@@ -15,9 +15,9 @@ class ger_tar_app():
 
         # Conexão com o banco de dados
         try:
-            cliente = MongoClient("mongodb+srv://user_hd:tgYkDOOvW0WGdZaS@cluster0.yd1ejkl.mongodb.net/?appName=Cluster0") 
-            bd = cliente["tarefas"]
-            colecao = bd["ger_tar_bd"]
+            self.cliente = MongoClient("mongodb+srv://user_hd:tgYkDOOvW0WGdZaS@cluster0.yd1ejkl.mongodb.net/?appName=Cluster0") 
+            self.bd = self.cliente["tarefas"]
+            self.colecao = self.bd["ger_tar_bd"]
             print(f"Conexão realizada com sucesso!")
         except Exception as excecao:
             print(f"Não conectado ao Banco de dados!", excecao)
@@ -29,7 +29,8 @@ class ger_tar_app():
 
         ctk.CTkLabel(root, text="Título da Tarefa: ", font=("Arial bold", 15)).grid(row=0, column=0, columnspan=1, sticky="e",pady=15, padx=20)
         
-        tit_tar = ctk.CTkEntry(root, width=445, border_width=1, border_color="#5e5e5e").grid(row=0, column=1, columnspan=1, pady=10)
+        self.tit_tar = ctk.CTkEntry(root, width=445, border_width=1, border_color="#5e5e5e")
+        self.tit_tar.grid(row=0, column=1, columnspan=1, pady=10)
 
         # -------------------------------------------------------------
         # DESCRIÇÃO DA TAREFA
@@ -37,14 +38,37 @@ class ger_tar_app():
 
         ctk.CTkLabel(root, text="Descrição da Tarefa: ", font=("Arial bold", 15)).grid(row=1, column=0, pady=10, sticky="n", columnspan=1, padx=20)
 
-        desc_tar = ctk.CTkTextbox(root, width=445, height=100, border_width=1, border_color="#5e5e5e").grid(row=1, column=1, columnspan=1, pady=10)
+        self.desc_tar = ctk.CTkTextbox(root, width=445, height=100, border_width=1, border_color="#5e5e5e")
+        self.desc_tar.grid(row=1, column=1, columnspan=1, pady=10)
 
         # -------------------------------------------------------------
         # FUNÇÕES dos botões
         # -------------------------------------------------------------
 
         def add_tar():
-            print("adicionar funcionou")
+            titulo = self.tit_tar.get().strip()
+            descricao = self.desc_tar.get("1.0", "end").strip()
+            
+            if not titulo or not descricao:
+                print("Preencha todos os campos")
+                return
+            
+            tarefa = {"titulo": titulo, "descricao": descricao, "status": "Pendente"}
+
+            if self.colecao is None:
+                print("Sem conexão com o BD.")
+                return
+
+            try:
+                res = self.colecao.insert_one(tarefa)
+                print("Inserido:", res.inserted_id)
+                # inserir na self.tabela 
+                self.tabela.insert("", "end", values=(titulo, descricao, "Pendente"))
+                # limpar inputs
+                self.tit_tar.delete(0, "end")
+                self.desc_tar.delete("1.0", "end")
+            except Exception as excecao:
+                print("Erro ao inserir:", excecao)
             
 
 
@@ -65,8 +89,8 @@ class ger_tar_app():
         btn.grid(row=2, column=1, pady=15, sticky="w", columnspan=2)
 
        
-        btn_add = ctk.CTkButton(btn, text="Adicionar", hover_color="#51e95c", text_color="#000000", command=add_tar)
-        btn_add.grid(row=2, column=0, padx=5)
+        self.btn_add = ctk.CTkButton(btn, text="Adicionar", hover_color="#51e95c", text_color="#000000", command=add_tar)
+        self.btn_add.grid(row=2, column=0, padx=5)
 
         btn_up = ctk.CTkButton(btn, text="Atualizar", hover_color="#e3f065", text_color="#000000", command=up_tar)
         btn_up.grid(row=2, column=1, padx=5)
@@ -82,30 +106,31 @@ class ger_tar_app():
         ctk.CTkLabel(root, text="Status: ", font=("Arial bold", 15)).grid(row=3, column=0, pady=15, sticky="e",padx=20)
 
 
-        status_var = ctk.StringVar(value="Todos")
+        self.status_var = ctk.StringVar(self.root,value="Todos")
 
-        status_var = ctk.CTkOptionMenu(root, values=["Pendente", "Concluída"], variable=status_var, width=150, text_color="#000000", dropdown_hover_color="#0870b1").grid(row=3, column=1, sticky="w")
+        self.status_var = ctk.CTkOptionMenu(self.root, values=["Pendente", "Concluída"], variable=self.status_var, width=150, text_color="#000000", dropdown_hover_color="#0870b1")
+        self.status_var.grid(row=3, column=1, sticky="w")
 
         btn_flt = ctk.CTkButton(root, text="Aplicar Filtro", text_color="#000000", width=230)
         btn_flt.grid(row=3, column=1, padx=30, sticky="e")
         
         # -------------------------------------------------------------
-        # TABELA DE EXIBIÇÃO
+        # self.TABELA DE EXIBIÇÃO
         # -------------------------------------------------------------
 
         tarefas = []
         
-        tabela = ttk.Treeview(root, columns=("Tìtulo", "Descrição", "Status"), show="headings")
+        self.tabela = ttk.Treeview(self.root, columns=("Tìtulo", "Descrição", "Status"), show="headings")
 
-        tabela.column("Tìtulo", minwidth=1, width=150)
-        tabela.column("Descrição", minwidth=0, width=350)
-        tabela.column("Status", minwidth=0, width=100)
+        self.tabela.column("Tìtulo", minwidth=1, width=150)
+        self.tabela.column("Descrição", minwidth=0, width=350)
+        self.tabela.column("Status", minwidth=0, width=100)
 
-        tabela.heading("Tìtulo", text="Tarefa")
-        tabela.heading("Descrição", text="Descrição")
-        tabela.heading("Status", text="Status")
+        self.tabela.heading("Tìtulo", text="Tarefa")
+        self.tabela.heading("Descrição", text="Descrição")
+        self.tabela.heading("Status", text="Status")
 
-        tabela.grid(row=4, column=1, columnspan=4)
+        self.tabela.grid(row=4, column=1, columnspan=4)
 
 
         for (t, d, s) in tarefas:
