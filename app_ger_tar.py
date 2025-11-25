@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import ttk
+from tkinter import messagebox
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
@@ -50,13 +51,13 @@ class ger_tar_app():
             descricao = self.desc_tar.get("1.0", "end").strip()
             
             if not titulo or not descricao:
-                print("Preencha todos os campos")
+                messagebox.showwarning("Campos vazios", "Preencha todos os campos antes de continuar.")
                 return
             
             tarefa = {"titulo": titulo, "descricao": descricao, "status": "Pendente"}
 
             if self.colecao is None:
-                print("Sem conexão com o BD.")
+                messagebox.showerror("Erro", "Sem conexão com o Banco de Dados.")
                 return
 
             try:
@@ -67,8 +68,9 @@ class ger_tar_app():
                 # limpar inputs
                 self.tit_tar.delete(0, "end")
                 self.desc_tar.delete("1.0", "end")
+                messagebox.showinfo("Sucesso", "Tarefa adicionada com sucesso!")
             except Exception as excecao:
-                print("Erro ao inserir:", excecao)
+                messagebox.showerror("Erro ao inserir", str(excecao))
             
 
 
