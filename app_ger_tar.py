@@ -134,8 +134,30 @@ class ger_tar_app():
             except Exception as erro:
                 messagebox.showerror("Erro", f"Erro ao excluir tarefa:\n{erro}")
 
-            
 
+
+            def selecionar_tarefa(event):
+                selecionado = self.tabela.selection()
+
+                if not selecionado:
+                    return
+
+                tarefa_id = selecionado[0]
+                valores = self.tabela.item(tarefa_id, "values")
+
+                titulo, descricao, status = valores
+
+                # Preencher campos
+                self.tit_tar.delete(0, "end")
+                self.tit_tar.insert(0, titulo)
+
+                self.desc_tar.delete("1.0", "end")
+                self.desc_tar.insert("1.0", descricao)
+
+                self.status_var.set(status)
+
+            carregar_tarefas()
+            
         # -------------------------------------------------------------
         # BOTÕES: Adicionar / Editar / Excluir
         # -------------------------------------------------------------
@@ -187,11 +209,13 @@ class ger_tar_app():
 
         self.tabela.grid(row=4, column=1, columnspan=4)
 
+        self.tabela.bind("<<TreeviewSelect>>", selecionar_tarefa)
+
 
         for (t, d, s) in tarefas:
             tarefas.insert("", "end", values=(t, d, s))
 
-        carregar_tarefas()
+        
 
 
 # -------------------------------------------------------------
