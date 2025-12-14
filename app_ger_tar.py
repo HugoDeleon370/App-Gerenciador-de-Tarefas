@@ -136,27 +136,26 @@ class ger_tar_app():
 
 
 
-            def selecionar_tarefa(event):
-                selecionado = self.tabela.selection()
+        def selecionar_tarefa(event):
+            selecionado = self.tabela.selection()
 
-                if not selecionado:
-                    return
+            if not selecionado:
+                return
 
-                tarefa_id = selecionado[0]
-                valores = self.tabela.item(tarefa_id, "values")
+            tarefa_id = selecionado[0]
+            valores = self.tabela.item(tarefa_id, "values")
 
-                titulo, descricao, status = valores
+            titulo, descricao, status = valores
 
-                # Preencher campos
-                self.tit_tar.delete(0, "end")
-                self.tit_tar.insert(0, titulo)
+            # Preencher campos
+            self.tit_tar.delete(0, "end")
+            self.tit_tar.insert(0, titulo)
 
-                self.desc_tar.delete("1.0", "end")
-                self.desc_tar.insert("1.0", descricao)
+            self.desc_tar.delete("1.0", "end")
+            self.desc_tar.insert("1.0", descricao)
 
-                self.status_var.set(status)
+            self.status_var.set(status)
 
-            carregar_tarefas()
             
         # -------------------------------------------------------------
         # BOTÕES: Adicionar / Editar / Excluir
@@ -216,6 +215,8 @@ class ger_tar_app():
             tarefas.insert("", "end", values=(t, d, s))
 
         
+        carregar_tarefas()
+
 
 
 # -------------------------------------------------------------
