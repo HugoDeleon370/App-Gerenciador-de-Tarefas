@@ -46,6 +46,27 @@ class ger_tar_app():
         # FUNÇÕES dos botões
         # -------------------------------------------------------------
 
+        def carregar_tarefas():
+            # Limpa a tabela antes de carregar
+            for item in self.tabela.get_children():
+                self.tabela.delete(item)
+
+            try:
+                for tarefa in self.colecao.find():
+                    self.tabela.insert(
+                        "",
+                        "end",
+                        iid=str(tarefa["_id"]),
+                        values=(
+                            tarefa.get("titulo", ""),
+                            tarefa.get("descricao", ""),
+                            tarefa.get("status", "Pendente")
+                        )
+                    )
+            except Exception as erro:
+                messagebox.showerror("Erro", f"Erro ao carregar tarefas:\n{erro}")
+
+
         def add_tar():
             titulo = self.tit_tar.get().strip()
             descricao = self.desc_tar.get("1.0", "end").strip()
@@ -170,6 +191,7 @@ class ger_tar_app():
         for (t, d, s) in tarefas:
             tarefas.insert("", "end", values=(t, d, s))
 
+        carregar_tarefas()
 
 
 # -------------------------------------------------------------
