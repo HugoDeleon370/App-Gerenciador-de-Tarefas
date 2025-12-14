@@ -64,7 +64,12 @@ class ger_tar_app():
                 res = self.colecao.insert_one(tarefa)
                 print("Inserido:", res.inserted_id)
                 # inserir na self.tabela 
-                self.tabela.insert("", "end", values=(titulo, descricao, "Pendente"))
+                self.tabela.insert(
+                    "",
+                    "end",
+                    iid=str(res.inserted_id),  # AQUI está o PASSO 1
+                    values=(titulo, descricao, "Pendente")
+                )
                 # limpar inputs
                 self.tit_tar.delete(0, "end")
                 self.desc_tar.delete("1.0", "end")
@@ -79,8 +84,35 @@ class ger_tar_app():
             
 
 
-        def del_tar():
-            print("excluir funcionou")
+        def del_tar():       
+            selecionado = self.tabela.selection()
+
+            if not selecionado:
+                messagebox.showwarning("Atenção", "Selecione uma tarefa para excluir.")
+                return
+
+            tarefa_id = selecionado[0]  # iid da linha (é o _id do MongoDB)
+
+            confirmar = messagebox.askyesno(
+                "Confirmar exclusão",
+                "Tem certeza que deseja excluir esta tarefa?"
+            )
+
+            if not confirmar:
+                return
+
+            try:
+                # Excluir do banco
+                self.colecao.delete_one({"_id": ObjectId(tarefa_id)})
+
+                # Excluir da tabela
+                self.tabela.delete(tarefa_id)
+
+                messagebox.showinfo("Sucesso", "Tarefa excluída com sucesso!")
+
+            except Exception as erro:
+                messagebox.showerror("Erro", f"Erro ao excluir tarefa:\n{erro}")
+
             
 
         # -------------------------------------------------------------
