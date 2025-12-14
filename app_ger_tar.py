@@ -9,6 +9,7 @@ class ger_tar_app():
     def __init__(self, root):
 
         self.root = root
+        self.tarefa_selecionada_id = None
         self.root.title("App")
         self.root.geometry("800x580")
         self.root.resizable(False, False) 
@@ -70,40 +71,87 @@ class ger_tar_app():
         def add_tar():
             titulo = self.tit_tar.get().strip()
             descricao = self.desc_tar.get("1.0", "end").strip()
-            
-            if not titulo or not descricao:
-                messagebox.showwarning("Campos vazios", "Preencha todos os campos antes de continuar.")
-                return
-            
-            tarefa = {"titulo": titulo, "descricao": descricao, "status": "Pendente"}
+            status = self.status_var.get()
 
-            if self.colecao is None:
-                messagebox.showerror("Erro", "Sem conexão com o Banco de Dados.")
+            if not titulo or not descricao:
+                messagebox.showwarning("Campos vazios", "Preencha todos os campos.")
                 return
+
+            tarefa = {
+                "titulo": titulo,
+                "descricao": descricao,
+                "status": status
+            }
 
             try:
                 res = self.colecao.insert_one(tarefa)
-                print("Inserido:", res.inserted_id)
-                # inserir na self.tabela 
+
                 self.tabela.insert(
                     "",
                     "end",
-                    iid=str(res.inserted_id),  # AQUI está o PASSO 1
-                    values=(titulo, descricao, "Pendente")
+                    iid=str(res.inserted_id),
+                    values=(titulo, descricao, status)
                 )
-                # limpar inputs
+
+                messagebox.showinfo("Sucesso", "Tarefa adicionada com sucesso!")
+
+                # Limpar campos
                 self.tit_tar.delete(0, "end")
                 self.desc_tar.delete("1.0", "end")
-                messagebox.showinfo("Sucesso", "Tarefa adicionada com sucesso!")
-            except Exception as excecao:
-                messagebox.showerror("Erro ao inserir", str(excecao))
-            
+                self.status_var.set("Pendente")
+
+            except Exception as erro:
+                messagebox.showerror("Erro", f"Erro ao inserir tarefa:\n{erro}")
+
 
 
         def up_tar():
-            print("atualizar funcionou")
-            
+            selecionado = self.tabela.selection()
 
+            if not selecionado:
+                messagebox.showwarning(
+                    "Atenção",
+                    "Selecione uma tarefa para atualizar."
+                )
+                return
+
+            tarefa_id = selecionado[0]
+
+            titulo = self.tit_tar.get().strip()
+            descricao = self.desc_tar.get("1.0", "end").strip()
+            status = self.status_var.get()
+
+            if not titulo or not descricao:
+                messagebox.showwarning("Campos vazios", "Preencha todos os campos.")
+                return
+
+            try:
+                self.colecao.update_one(
+                    {"_id": ObjectId(tarefa_id)},
+                    {"$set": {
+                        "titulo": titulo,
+                        "descricao": descricao,
+                        "status": status
+                    }}
+                )
+
+                self.tabela.item(
+                    tarefa_id,
+                    values=(titulo, descricao, status)
+                )
+
+                messagebox.showinfo("Sucesso", "Tarefa atualizada com sucesso!")
+
+                # Limpar campos e seleção
+                self.tabela.selection_remove(tarefa_id)
+                self.tit_tar.delete(0, "end")
+                self.desc_tar.delete("1.0", "end")
+                self.status_var.set("Pendente")
+
+            except Exception as erro:
+                messagebox.showerror("Erro", f"Erro ao atualizar tarefa:\n{erro}")
+
+            
 
         def del_tar():       
             selecionado = self.tabela.selection()
@@ -143,6 +191,7 @@ class ger_tar_app():
                 return
 
             tarefa_id = selecionado[0]
+            self.tarefa_selecionada_id = tarefa_id
             valores = self.tabela.item(tarefa_id, "values")
 
             titulo, descricao, status = valores
@@ -197,6 +246,7 @@ class ger_tar_app():
         tarefas = []
         
         self.tabela = ttk.Treeview(self.root, columns=("Tìtulo", "Descrição", "Status"), show="headings")
+
 
         self.tabela.column("Tìtulo", minwidth=1, width=150)
         self.tabela.column("Descrição", minwidth=0, width=350)
