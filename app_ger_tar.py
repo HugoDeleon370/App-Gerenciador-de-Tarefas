@@ -207,7 +207,7 @@ class ger_tar_app():
 
             
         # -------------------------------------------------------------
-        # BOTÕES: Adicionar / Editar / Excluir
+        # BOTÕES: Adicionar / Atualizar / Excluir
         # -------------------------------------------------------------
 
         btn = ctk.CTkFrame(root)
