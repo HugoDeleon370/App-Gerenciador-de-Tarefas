@@ -77,6 +77,18 @@ class ger_tar_app():
                 messagebox.showwarning("Campos vazios", "Preencha todos os campos.")
                 return
 
+
+                        # Verifica se já existe tarefa com o mesmo título
+            tarefa_existente = self.colecao.find_one({"titulo": titulo})
+
+            if tarefa_existente:
+                messagebox.showwarning(
+                    "Tarefa duplicada",
+                    f"Já existe uma tarefa com o título '{titulo}'."
+                )
+                return
+
+
             tarefa = {
                 "titulo": titulo,
                 "descricao": descricao,
@@ -279,4 +291,3 @@ app = ger_tar_app (root)
 root.mainloop()    
 
 
-# "#5e5e5e"
