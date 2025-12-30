@@ -87,6 +87,22 @@ class ger_tar_app():
                     f"Já existe uma tarefa com o título '{titulo}'."
                 )
                 return
+            
+                        # Validação de tamanho
+            if len(titulo) > 30:
+                messagebox.showwarning(
+                    "Título muito longo",
+                    "O nome da tarefa deve ter no máximo 30 caracteres."
+                )
+                return
+
+            if len(descricao) > 150:
+                messagebox.showwarning(
+                    "Descrição muito longa",
+                    "A descrição pode conter até 150 caracteres."
+                )
+                return
+
 
 
             tarefa = {
@@ -135,6 +151,21 @@ class ger_tar_app():
 
             if not titulo or not descricao:
                 messagebox.showwarning("Campos vazios", "Preencha todos os campos.")
+                return
+
+            # Validação de tamanho
+            if len(titulo) > 30:
+                messagebox.showwarning(
+                    "Título muito longo",
+                    "O nome da tarefa deve ter no máximo 30 caracteres."
+                )
+                return
+
+            if len(descricao) > 150:
+                messagebox.showwarning(
+                    "Descrição muito longa",
+                    "A descrição pode conter até 150 caracteres."
+                )
                 return
 
             try:
