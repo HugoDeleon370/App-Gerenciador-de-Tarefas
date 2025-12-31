@@ -76,18 +76,18 @@ class ger_tar_app():
             if not titulo or not descricao:
                 messagebox.showwarning("Campos vazios", "Preencha todos os campos.")
                 return
-
-
-                        # Verifica se já existe tarefa com o mesmo título
+                    # Verifica se já existe tarefa com o mesmo título
             tarefa_existente = self.colecao.find_one({"titulo": titulo})
+
 
             if tarefa_existente:
                 messagebox.showwarning(
-                    "Tarefa duplicada",
-                    f"Já existe uma tarefa com o título '{titulo}'."
+                    "Tarefa já existente",
+                    f"Já existe uma tarefa chamada '{titulo}'.\n"
+                    "Conclua a tarefa existente antes de criar outra com o mesmo nome."
                 )
                 return
-            
+           
                         # Validação de tamanho
             if len(titulo) > 30:
                 messagebox.showwarning(
@@ -220,6 +220,12 @@ class ger_tar_app():
                 # Excluir da tabela
                 self.tabela.delete(tarefa_id)
 
+                # Limpar campos após exclusão
+                self.tit_tar.delete(0, "end")
+                self.desc_tar.delete("1.0", "end")
+                self.status_var.set("Pendente")
+                self.tarefa_selecionada_id = None
+
                 messagebox.showinfo("Sucesso", "Tarefa excluída com sucesso!")
 
             except Exception as erro:
@@ -274,7 +280,7 @@ class ger_tar_app():
         ctk.CTkLabel(root, text="Status: ", font=("Arial bold", 15)).grid(row=3, column=0, pady=15, sticky="e",padx=20)
 
 
-        self.status_var = ctk.StringVar(self.root,value="Todos")
+        self.status_var = ctk.StringVar(self.root,value="Pendente")
 
         self.status_var = ctk.CTkOptionMenu(self.root, values=["Pendente", "Concluída"], variable=self.status_var, width=150, text_color="#000000", dropdown_hover_color="#0870b1")
         self.status_var.grid(row=3, column=1, sticky="w")
