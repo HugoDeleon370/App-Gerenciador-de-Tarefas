@@ -76,8 +76,12 @@ class ger_tar_app():
             if not titulo or not descricao:
                 messagebox.showwarning("Campos vazios", "Preencha todos os campos.")
                 return
+            
                     # Verifica se já existe tarefa com o mesmo título
-            tarefa_existente = self.colecao.find_one({"titulo": titulo})
+            tarefa_existente = self.colecao.find_one({
+                "titulo": titulo,
+                "status": "Pendente"
+            })
 
 
             if tarefa_existente:
@@ -263,13 +267,13 @@ class ger_tar_app():
         btn.grid(row=2, column=1, pady=15, sticky="w", columnspan=2)
 
        
-        self.btn_add = ctk.CTkButton(btn, text="Adicionar", hover_color="#51e95c", text_color="#000000", command=add_tar)
+        self.btn_add = ctk.CTkButton(btn, text="Adicionar", text_color="#000000", command=add_tar)
         self.btn_add.grid(row=2, column=0, padx=5)
 
-        btn_up = ctk.CTkButton(btn, text="Atualizar", hover_color="#e3f065", text_color="#000000", command=up_tar)
+        btn_up = ctk.CTkButton(btn, text="Atualizar", text_color="#000000", command=up_tar)
         btn_up.grid(row=2, column=1, padx=5)
 
-        btn_del = ctk.CTkButton(btn, text="Excluir", hover_color="#f52929", text_color="#000000", command=del_tar)
+        btn_del = ctk.CTkButton(btn, text="Excluir", text_color="#000000", command=del_tar)
         btn_del.grid(row=2, column=2, padx=5)
 
         
