@@ -47,13 +47,18 @@ class ger_tar_app():
         # FUNÇÕES dos botões
         # -------------------------------------------------------------
 
-        def carregar_tarefas():
-            # Limpa a tabela antes de carregar
+        def carregar_tarefas(status_filtro=None):
+            # Limpa a tabela
             for item in self.tabela.get_children():
                 self.tabela.delete(item)
 
             try:
-                for tarefa in self.colecao.find():
+                query = {}
+
+                if status_filtro and status_filtro != "Todos":
+                    query["status"] = status_filtro
+
+                for tarefa in self.colecao.find(query):
                     self.tabela.insert(
                         "",
                         "end",
@@ -65,13 +70,23 @@ class ger_tar_app():
                         )
                     )
             except Exception as erro:
-                messagebox.showerror("Erro", f"Erro ao carregar tarefas:\n{erro}")
+                messagebox.showerror(
+                    "Erro ao carregar tarefas",
+                    str(erro)
+                )
+
+        def aplicar_filtro():
+            status = self.status_var.get()
+            carregar_tarefas(status)
 
 
         def add_tar():
             titulo = self.tit_tar.get().strip()
             descricao = self.desc_tar.get("1.0", "end").strip()
             status = self.status_var.get()
+            if status == "Todos":
+                status = "Pendente"
+
 
             if not titulo or not descricao:
                 messagebox.showwarning("Campos vazios", "Preencha todos os campos.")
@@ -152,6 +167,9 @@ class ger_tar_app():
             titulo = self.tit_tar.get().strip()
             descricao = self.desc_tar.get("1.0", "end").strip()
             status = self.status_var.get()
+            if status == "Todos":
+                status = "Pendente"
+
 
             if not titulo or not descricao:
                 messagebox.showwarning("Campos vazios", "Preencha todos os campos.")
@@ -276,21 +294,37 @@ class ger_tar_app():
         btn_del = ctk.CTkButton(btn, text="Excluir", text_color="#000000", command=del_tar)
         btn_del.grid(row=2, column=2, padx=5)
 
-        
         # -------------------------------------------------------------
-        # STATUS + FILTRO
+        # STATUS (TAREFA + FUTURO FILTRO)
         # -------------------------------------------------------------
 
-        ctk.CTkLabel(root, text="Status: ", font=("Arial bold", 15)).grid(row=3, column=0, pady=15, sticky="e",padx=20)
+        ctk.CTkLabel(
+            root,
+            text="Status:",
+            font=("Arial bold", 15)
+        ).grid(row=3, column=0, sticky="e", padx=20, pady=15)
 
+        self.status_var = ctk.StringVar(self.root, value="Pendente")
 
-        self.status_var = ctk.StringVar(self.root,value="Pendente")
+        self.status_menu = ctk.CTkOptionMenu(
+            root,
+            values=["Pendente", "Concluída", "Todos"],
+            variable=self.status_var,
+            width=150,
+            text_color="#000000",
+            dropdown_hover_color="#0870b1"
+        )
+        self.status_menu.grid(row=3, column=1, sticky="w")
 
-        self.status_var = ctk.CTkOptionMenu(self.root, values=["Pendente", "Concluída"], variable=self.status_var, width=150, text_color="#000000", dropdown_hover_color="#0870b1")
-        self.status_var.grid(row=3, column=1, sticky="w")
-
-        btn_flt = ctk.CTkButton(root, text="Aplicar Filtro", text_color="#000000", width=230)
+        btn_flt = ctk.CTkButton(
+            root,
+            text="Aplicar Filtro",
+            text_color="#000000",
+            width=230,
+            command=aplicar_filtro
+        )
         btn_flt.grid(row=3, column=1, padx=30, sticky="e")
+
         
         # -------------------------------------------------------------
         # self.TABELA DE EXIBIÇÃO
@@ -318,7 +352,7 @@ class ger_tar_app():
             tarefas.insert("", "end", values=(t, d, s))
 
         
-        carregar_tarefas()
+        carregar_tarefas("Todos")
 
 
 
